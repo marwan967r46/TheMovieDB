@@ -3,255 +3,167 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>MovieFinder Pro</title>
+  <title>TheMovieDB App</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
   <style>
-    body {
-      background: radial-gradient(ellipse at top left, #3e4ea1 0%, #16161c 100%);
-      color: #fff; font-family: 'Roboto',Arial,sans-serif; margin:0;
-      min-height:100vh;
-    }
-    h1 {
-      text-align:center;
-      font-size:2.15em;
-      font-weight:700;
-      letter-spacing:2px;
-      margin:30px 0 10px;
-      color:#88aaff;
-      text-shadow:0 3px 25px rgba(64,80,200,0.23), 0 1px 0 #22223a;
-    }
-    .container {
-      max-width:520px;margin:auto;padding:12px;
-      background: rgba(34,34,52,0.94); border-radius:28px;
-      box-shadow: 0 8px 48px rgba(0,0,0,0.32);
-    }
-    .form-section {margin-bottom:27px;}
-    .form-group {margin-bottom:14px;}
-    label {font-weight:500;font-size:1.05em;display:block;margin-bottom:6px;}
-    input[type="text"], select {
-      width:100%;padding:.80em .7em;font-size:1em;border-radius:14px;border:none;margin-bottom:8px;
-      background:#dde6ff;color:#2a314d;
-      box-shadow: 0 2px 8px rgba(40,50,120,0.11);
-      font-family:inherit;
-    }
-    .genre-list {margin-bottom:4px;}
-    .genre-list label {
-      display:inline-block;background:#253779;color:#dbeeff;
-      border-radius:15px;padding:6px 14px;margin:3px 7px 8px 0; cursor:pointer;font-size:.97em;
-      box-shadow:0 1px 5px rgba(34,34,52,0.18);
-      transition:background .17s;
-    }
-    .genre-list input[type="checkbox"] {accent-color:#6ca7ff;}
-    .genre-list label:hover, .genre-list input[type="checkbox"]:checked+label {
-      background:#6493fa;color:#fff;
-    }
-    button[type="submit"] {
-      width:100%;padding:.8em;background:linear-gradient(90deg,#6493fa,#3e4ea1);
-      color:#fff;font-size:1.08em;font-weight:700;border-radius:18px;border:none;cursor:pointer;
-      margin-top:2px;box-shadow:0 1px 12px rgba(80,90,210,0.13);
-      transition:box-shadow .17s,transform .13s;
-    }
+    body {margin:0;font-family:'Roboto',Arial,sans-serif;background:#16161c;color:#fff;}
+    h1 {text-align:center;letter-spacing:1px;color:#3e4ea1;margin:18px 0 8px;}
+    .container {max-width:520px;margin:auto;padding:14px;background:rgba(34,34,52,0.94);border-radius:24px;box-shadow:0 6px 28px rgba(0,0,0,0.19);}
+    .form-section {margin-bottom:18px;}
+    .form-group {margin-bottom:11px;}
+    label {display:block;font-weight:500;margin-bottom:6px;}
+    input[type="text"], select {width:100%;padding:.8em .5em;font-size:1em;border-radius:13px;border:none;margin-bottom:8px;background:#dde6ff;color:#2a314d;}
+    .genre-list label {display:inline-block;background:#253779;color:#dbeeff;border-radius:15px;padding:6px 14px;margin:3px 7px 8px 0;cursor:pointer;font-size:.97em;}
+    .genre-list input[type="checkbox"] {accent-color:#4ec1ef;}
+    button[type="submit"] {width:100%;padding:.8em;background:linear-gradient(90deg,#6493fa,#3e4ea1);color:#fff;font-size:1.08em;font-weight:700;border-radius:17px;border:none;cursor:pointer;box-shadow:0 1px 12px rgba(80,90,210,0.13);}
     button[type="submit"]:hover {box-shadow:0 3px 22px rgba(80,90,210,0.15);transform:scale(1.03);}
-    .recommend-section {margin-bottom:25px;}
-    .movie-list {
-      display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-      gap:18px;justify-content:center;margin-bottom:10px;
-    }
-    .movie-card {
-      background:linear-gradient(120deg,#232336 85%,#3e4ea1 100%);
-      border-radius:16px;box-shadow:0 5px 24px rgba(20,25,80,0.21);padding:13px 10px;text-align:center;cursor:pointer;
-      min-height:270px;transition:transform .13s,box-shadow .15s;position:relative;
-      border:1.5px solid #3e4ea1;
-    }
-    .movie-card:hover {box-shadow:0 9px 44px rgba(60,120,200,0.22);transform:scale(1.04);}
-    .movie-card img {
-      width:100%;max-width:110px;border-radius:8px;background:#222;
-      aspect-ratio:7/10;object-fit:cover;margin-bottom:7px;box-shadow:0 2px 12px #22337788;
-    }
-    .movie-card .title {margin:6px 0 2px;font-size:1.04em;font-weight:600;letter-spacing:.6px;}
-    .movie-card .year {font-size:.95em;color:#aadcff;}
-    .movie-card .genre {font-size:.83em;color:#88bbec;}
-    /* Modal */
-    .modal {
-      position:fixed;top:0;left:0;width:100vw;height:100vh;
-      background:rgba(28,32,52,0.95);display:none;align-items:center;justify-content:center;z-index:5000;
-      animation:fadeinbg .33s;
-    }
-    @keyframes fadeinbg {from{background:rgba(28,32,52,0.67);}to{background:rgba(28,32,52,0.96);}}
-    .modal-content {
-      background:linear-gradient(120deg,#232336 78%,#3e4ea1 100%);
-      color:#fff;border-radius:24px;padding:26px 18px;width:92vw;max-width:340px;
-      text-align:center;position:relative;min-height:210px;
-      box-shadow: 0 12px 38px rgba(60,120,200,0.33);
-      animation:modin .22s;
-    }
-    @keyframes modin {from{opacity:.3;transform:scale(.8);}to{opacity:1;transform:scale(1);}}
-    .modal-content img {width:100%;max-width:175px;border-radius:11px;background:#222;margin:0 auto 12px;}
-    .modal-content h2 {margin:7px 0 6px;font-size:1.13em;letter-spacing:.6px;}
-    .modal-content p {font-size:.99em;color:#aadcff;}
-    .modal-content .close {
-      font-size:2.1em;position:absolute;top:8px;right:18px;color:#fff;cursor:pointer;
-      background:none;border:none;outline:none;transition:color .15s;
-    }
-    .modal-content .close:hover {color:#f98b88;}
-    .modal-buttons button {
-      background:linear-gradient(90deg,#6493fa,#3e4ea1);
-      color:#fff;border:none;border-radius:16px;
-      padding:9px 18px;margin:10px 10px;cursor:pointer;font-size:1.07em;font-weight:bold;
-      box-shadow:0 2px 8px #2a314d33;transition:background .18s;
-    }
-    .modal-buttons button:hover {background:linear-gradient(90deg,#88ccff,#3e4ea1);color:#263;}
-    @media (max-width:600px) {
-      .container{padding:3px;}
-      .form-section, .modal-content {padding:12px 3vw;}
-      .movie-card {min-width:47vw;}
-      .modal-content{padding:14px 4vw;}
-    }
+    .results-section {margin-top:18px;}
+    .results-header {margin-bottom:8px;font-size:1.09em;}
+    .movie-list {display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;}
+    .movie-card {background:linear-gradient(120deg,#232336 85%,#3e4ea1 100%);border-radius:14px;box-shadow:0 5px 28px rgba(20,25,80,0.22);padding:10px;text-align:center;cursor:pointer;}
+    .movie-card img {width:95%;max-width:110px;border-radius:7px;background:#222;margin-bottom:6px;}
+    .movie-title {font-weight:600;}
+    .movie-meta {color:#aadcff;font-size:.94em;}
+    .movie-overview {font-size:.92em;color:#d7e7ff;margin:7px 0 0;}
+    .pagination {text-align:center;margin:18px 0;}
+    .pagination button {margin:0 10px;padding:8px 24px 9px;font-size:1em;border-radius:14px;border:none;background:#3e4ea1;color:#fff;cursor:pointer;}
+    .pagination button:disabled {background:#222;color:#aaa;}
+    @media (max-width:600px) {.container {border-radius:14px;} .movie-card {min-width:110px;} h1 {font-size:1.17em;}}
   </style>
 </head>
 <body>
-  <h1>🎬 MovieFinder Pro</h1>
+  <h1>TheMovieDB App</h1>
   <div class="container">
-    <!-- User Setup Form -->
+    <!-- Selection Form -->
     <form id="userForm" class="form-section">
       <div class="form-group">
         <label for="name">Your Name</label>
         <input type="text" id="name" required autocomplete="off">
       </div>
       <div class="form-group">
-        <label for="language">Preferred Language</label>
+        <label for="language">Preferred Language (what language the movie is in)</label>
         <select id="language" required>
           <option value="">Select language</option>
           <option value="en">English</option>
+          <option value="ml">Malayalam</option>
+          <option value="ta">Tamil</option>
+          <option value="kn">Kannada</option>
           <option value="hi">Hindi</option>
-          <option value="es">Spanish</option>
-          <option value="fr">French</option>
-          <option value="de">German</option>
+          <option value="ko">Korean</option>
           <option value="ja">Japanese</option>
+          <option value="es">Spanish</option>
+          <option value="bn">Bengali</option>
+          <option value="mr">Marathi</option>
+          <option value="te">Telugu</option>
+          <option value="gu">Gujarati</option>
+          <option value="pa">Punjabi</option>
+          <option value="zh">Chinese</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="region">Preferred Region</label>
+        <select id="region" required>
+          <option value="IN">India</option>
+          <option value="US">United States</option>
+          <option value="JP">Japan</option>
+          <option value="KR">Korea</option>
+          <option value="GB">UK</option>
+          <option value="ES">Spain</option>
+          <option value="FR">France</option>
+          <option value="CN">China</option>
+          <option value="BR">Brazil</option>
+          <option value="DE">Germany</option>
         </select>
       </div>
       <div class="form-group genre-list" id="genreList">
-        <label style="font-size:1.01em;margin-right:0;">Genres</label>
+        <label style="font-size:1.01em;">Genres</label>
         <div id="genresLoading">Loading genres...</div>
       </div>
       <button type="submit">Get Recommendations</button>
     </form>
-    <div class="recommend-section" id="recommendSection" style="display:none;">
-      <h2>Hello, <span id="userName"></span>!</h2>
-      <div style="margin-bottom:11px;font-size:1.07em;">
-        Movies in <span id="userLang"></span>, genres: <span id="userGenres"></span>
-      </div>
+
+    <!-- Results with Pagination -->
+    <div id="resultsSection" class="results-section" style="display:none;">
+      <div class="results-header">Hi <span id="userName"></span>! Showing <span id="userLang"></span> movies for region <span id="userRegion"></span> in <span id="userGenres"></span></div>
       <div class="movie-list" id="movieList"></div>
-    </div>
-  </div>
-  <!-- Movie Modal -->
-  <div id="movieModal" class="modal">
-    <div class="modal-content">
-      <button class="close" id="closeModal">&times;</button>
-      <img id="modalPoster" src="" alt="Movie Poster" onerror="this.src='https://via.placeholder.com/150x240?text=No+Image';">
-      <h2 id="modalTitle"></h2>
-      <p id="modalYear"></p>
-      <p id="modalGenre"></p>
-      <div class="modal-buttons">
-        <button onclick="addToWatchlist()">Add to Watchlist</button>
-        <button onclick="findSimilar()">Find Similar</button>
+      <div class="pagination">
+        <button id="prevPage">Prev</button>
+        <span id="pageNum">1</span>
+        <button id="nextPage">Next</button>
       </div>
     </div>
   </div>
   <script>
-    const TMDB_API_KEY = '55aa15967257accd7765c570a60be1be'; // <-- Replace with your TMDb key
+    const TMDB_API_KEY = '55aa15967257accd7765c570a60be1be'; // <--- Put your API key here!
     const TMDB_API_BASE = 'https://api.themoviedb.org/3';
+
     let tmdbGenres = [];
-    // --- Dynamic Genre Loader ---
-    async function loadGenres() {
-      try {
-        const res = await fetch(`${TMDB_API_BASE}/genre/movie/list?api_key=${TMDB_API_KEY}&language=en`);
-        const data = await res.json();
-        tmdbGenres = data.genres || [];
-        const genreDiv = document.getElementById('genreList');
-        document.getElementById('genresLoading').style.display = 'none';
-        // Make genre labels wrap nicely and clickable
-        genreDiv.innerHTML += tmdbGenres.map(g =>
-          `<label><input type="checkbox" name="genre" value="${g.id}"> ${g.name}</label>`
-        ).join(' ');
-      } catch {
-        document.getElementById('genresLoading').innerText = "Failed to load genres. Check API key!";
-      }
+    let currentLang = '', currentGenreIDs = [], currentPage = 1, lastTotalPages = 1, currentRegion = '';
+
+    // Load genres on startup
+    async function loadGenres(){
+      const res = await fetch(`${TMDB_API_BASE}/genre/movie/list?api_key=${TMDB_API_KEY}&language=en`);
+      const data = await res.json();
+      tmdbGenres = data.genres || [];
+      genreList.innerHTML = tmdbGenres.map(g =>
+        `<label><input type="checkbox" name="genre" value="${g.id}"> ${g.name}</label>`
+      ).join(' ');
     }
     loadGenres();
-    // --- Form Submission ---
+
+    // Form submission handler
     document.getElementById('userForm').onsubmit = async function(e){
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
       const language = document.getElementById('language').value;
       const langText = document.getElementById('language').selectedOptions[0].text;
-      const genreIDs = Array.from(document.querySelectorAll('input[name=\"genre\"]:checked')).map(cb=>cb.value);
+      const region = document.getElementById('region').value;
+      const regionText = document.getElementById('region').selectedOptions.text;
+      const genreIDs = Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(cb=>cb.value);
       const genreNames = tmdbGenres.filter(g=>genreIDs.includes(String(g.id))).map(g=>g.name);
-      if(!name || !language || genreIDs.length===0){
-        alert("Please enter your name, select a language, and choose at least one genre."); return;
+
+      if(!name || !language || !region || genreIDs.length===0){
+        alert("Please enter your name, select a language, region, and at least one genre."); return;
       }
+      document.getElementById('userForm').style.display = 'none';
+      document.getElementById('resultsSection').style.display = '';
       document.getElementById('userName').innerText=name;
       document.getElementById('userLang').innerText=langText;
+      document.getElementById('userRegion').innerText=regionText;
       document.getElementById('userGenres').innerText=genreNames.join(', ');
-      await showRecommendations(language, genreIDs);
-      document.getElementById('userForm').style.display='none';
-      document.getElementById('recommendSection').style.display='';
+      currentLang = language;
+      currentRegion = region;
+      currentGenreIDs = genreIDs;
+      currentPage = 1;
+      await loadRecommendations();
     };
-    // --- Fetch Recommendations from TMDb ---
-    async function showRecommendations(language, genreIDs){
-      let url = `${TMDB_API_BASE}/discover/movie?api_key=${TMDB_API_KEY}&language=${language}&sort_by=popularity.desc&with_genres=${genreIDs.join(',')}&page=1`;
+
+    async function loadRecommendations(){
+      // Use with_original_language for movie's production language
+      let url = `${TMDB_API_BASE}/discover/movie?api_key=${TMDB_API_KEY}&region=${currentRegion}&sort_by=popularity.desc&with_genres=${currentGenreIDs.join(',')}&with_original_language=${currentLang}&language=en&page=${currentPage}`;
       let res = await fetch(url);
       let data = await res.json();
       let movies = data.results || [];
-      renderMovies(movies.map(movie => ({
-        title: movie.title,
-        year: movie.release_date ? movie.release_date.slice(0,4) : '',
-        poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '',
-        genre: getMovieGenres(movie.genre_ids)
-      })));
+      lastTotalPages = data.total_pages || 1;
+      document.getElementById('movieList').innerHTML =
+        movies.map(movie=>`
+          <div class="movie-card">
+            <img src="${movie.poster_path?'https://image.tmdb.org/t/p/w500'+movie.poster_path:'https://via.placeholder.com/110x170?text=No+Image'}">
+            <div class="movie-title">${movie.title}</div>
+            <div class="movie-meta">${movie.release_date?movie.release_date.slice(0,4):''}</div>
+            <div class="movie-overview">${movie.overview || ''}</div>
+          </div>`).join('');
+      document.getElementById('pageNum').innerText = currentPage;
+      document.getElementById('prevPage').disabled = currentPage<=1;
+      document.getElementById('nextPage').disabled = currentPage>=lastTotalPages;
     }
-    // Helper: get genre names from IDs
-    function getMovieGenres(ids){
-      return ids.map(id => {
-        let g = tmdbGenres.find(gg => gg.id==id);
-        return g ? g.name : '';
-      }).join(', ');
-    }
-    // --- Render Movie Cards ---
-    function renderMovies(arr){
-      const movieList = document.getElementById('movieList');
-      movieList.innerHTML='';
-      arr.forEach(movie=>{
-        const card=document.createElement('div');
-        card.className='movie-card';
-        card.innerHTML=`
-          <img src="${movie.poster||'https://via.placeholder.com/110x170?text=No+Image'}"
-            onerror="this.src='https://via.placeholder.com/110x170?text=No+Image';">
-          <div class="title">${movie.title}</div>
-          <div class="year">${movie.year}</div>
-          <div class="genre">${movie.genre}</div>
-        `;
-        card.onclick=()=>showModal(movie);
-        movieList.appendChild(card);
-      });
-    }
-    // --- Modal Logic ---
-    function showModal(movie){
-      document.getElementById('modalTitle').innerText=movie.title;
-      document.getElementById('modalYear').innerText=movie.year;
-      document.getElementById('modalPoster').src=movie.poster||'https://via.placeholder.com/150x240?text=No+Image';
-      document.getElementById('modalGenre').innerText=movie.genre;
-      document.getElementById('movieModal').style.display='flex';
-    }
-    function closeModal(){
-      document.getElementById('movieModal').style.display='none';
-    }
-    document.getElementById('closeModal').onclick=closeModal;
-    document.getElementById('movieModal').addEventListener('click',function(e){
-      if(e.target===this) closeModal();
-    });
-    function addToWatchlist(){alert("Added to watchlist!");}
-    function findSimilar(){alert("Finding similar movies...");}
+
+    document.getElementById('prevPage').onclick = async function(){
+      if(currentPage > 1){ currentPage--; await loadRecommendations();}
+    };
+    document.getElementById('nextPage').onclick = async function(){
+      if(currentPage < lastTotalPages){ currentPage++; await loadRecommendations();}
+    };
   </script>
 </body>
 </html>
